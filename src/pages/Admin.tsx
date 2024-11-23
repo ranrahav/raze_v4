@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
+import { Session } from '@supabase/supabase-js';
 import { LayoutDashboard, Users, Map, Settings, Users2, Globe } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import Auth from '../components/admin/Auth';
@@ -13,7 +14,7 @@ import CommunityForm from '../components/admin/CommunityForm';
 
 function Admin() {
   const location = useLocation();
-  const [session, setSession] = useState(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

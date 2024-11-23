@@ -114,34 +114,38 @@ function Home() {
       </nav>
 
       {/* Main Content */}
-      <main className="pt-24 container mx-auto px-4">
-        <div className="max-w-3xl mx-auto text-center mb-12">
+      <main className="pt-24 px-4">
+        <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4 text-gray-900">
             Your Way to Relocate
           </h1>
           <p className="text-lg text-gray-600 mb-6">
             Streamline your relocation journey to make your move successful
           </p>
-          <Button 
-            size="lg" 
-            className="rounded-full px-8"
-            onClick={() => setShowForm(true)}
-          >
-            Get Started <ChevronRight className="ml-2 h-4 w-4" />
-          </Button>
-          <div className="mt-3 text-sm text-gray-500 space-x-2">
-            <span>No credit card needed</span>
-            <span>•</span>
-            <span>Free consultation available</span>
-          </div>
+          {!showForm && (
+            <>
+              <Button 
+                size="lg" 
+                className="rounded-full px-8"
+                onClick={() => setShowForm(true)}
+              >
+                Get Started <ChevronRight className="ml-2 h-4 w-4" />
+              </Button>
+              <div className="mt-3 text-sm text-gray-500 space-x-2">
+                <span>No credit card needed</span>
+                <span>•</span>
+                <span>Free consultation available</span>
+              </div>
+            </>
+          )}
         </div>
 
         {showForm ? (
-          <div className="max-w-3xl mx-auto">
+          <div>
             <RelocationForm />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {previewCards.map((card, index) => (
               <Card key={index} className="border-0 shadow-lg">
                 <CardContent className={`p-6 bg-gradient-to-br ${card.gradient} text-white h-full`}>
