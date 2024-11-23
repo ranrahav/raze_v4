@@ -1,93 +1,45 @@
 import React, { useState } from 'react';
-import { Rocket, ChevronRight, Globe, Mail, Phone } from 'lucide-react';
+import { Rocket, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import RelocationForm from '../components/RelocationForm';
+import { motion } from 'framer-motion';
 
 function Home() {
   const [showForm, setShowForm] = useState(false);
 
-  const previewCards = [
+  const cards = [
     {
       title: "Service Providers",
-      gradient: "from-emerald-400 to-green-500",
-      content: (
-        <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <img src="https://i.pravatar.cc/150?img=1" alt="" className="w-12 h-12 rounded-full" />
-            <div>
-              <h4 className="font-medium">Kate Anderson</h4>
-              <p className="text-sm opacity-80">Visa Specialist</p>
-            </div>
-          </div>
-          <div className="space-y-2 text-sm">
-            <a href="#" className="flex items-center gap-2">
-              <Globe className="w-4 h-4" />
-              kateanderson.com
-            </a>
-            <a href="#" className="flex items-center gap-2">
-              <Phone className="w-4 h-4" />
-              +44123456789
-            </a>
-          </div>
-        </div>
-      )
+      description: "Connect with trusted relocation experts, visa specialists, and housing agents.",
+      gradient: "from-indigo-500/20 to-indigo-600/20",
+      hoverGradient: "from-indigo-500 to-indigo-600",
+      image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&q=80&w=300&h=300",
+      imageAlt: "Professional relocation experts meeting with clients"
     },
     {
-      title: "People Who Relocated",
-      gradient: "from-blue-400 to-indigo-500",
-      content: (
-        <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <img src="https://i.pravatar.cc/150?img=5" alt="" className="w-12 h-12 rounded-full" />
-            <div>
-              <h4 className="font-medium">Emma Wilson</h4>
-              <p className="text-sm opacity-80">Relocated: Aug 2023</p>
-            </div>
-          </div>
-          <div className="space-y-2 text-sm">
-            <a href="#" className="flex items-center gap-2">
-              <Mail className="w-4 h-4" />
-              emma.wilson@example.com
-            </a>
-          </div>
-        </div>
-      )
+      title: "Relocated People",
+      description: "Learn from those who've successfully made the move and get insider tips.",
+      gradient: "from-teal-500/20 to-teal-600/20",
+      hoverGradient: "from-teal-500 to-teal-600",
+      image: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&q=80&w=300&h=300",
+      imageAlt: "Happy family in their new home"
     },
     {
       title: "Communities",
-      gradient: "from-purple-400 to-pink-500",
-      content: (
-        <div className="space-y-3">
-          <h4 className="font-medium">Life in London</h4>
-          <p className="text-sm opacity-80">15,000 members</p>
-          <Button 
-            className="w-full bg-white/20 hover:bg-white/30 text-white border-0"
-          >
-            Join on Reddit
-          </Button>
-        </div>
-      )
+      description: "Join vibrant local communities and build your network in your new home.",
+      gradient: "from-amber-500/20 to-amber-600/20",
+      hoverGradient: "from-amber-500 to-amber-600",
+      image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&q=80&w=300&h=300",
+      imageAlt: "Diverse group of people in a community gathering"
     },
     {
-      title: "Country Steps",
-      gradient: "from-orange-400 to-red-500",
-      content: (
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">1</div>
-            <p className="text-sm">Visa Application</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">2</div>
-            <p className="text-sm">Housing Search</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">3</div>
-            <p className="text-sm">Bank Account</p>
-          </div>
-        </div>
-      )
+      title: "Relocation Guide",
+      description: "Step-by-step guidance through your entire relocation journey.",
+      gradient: "from-rose-500/20 to-rose-600/20",
+      hoverGradient: "from-rose-500 to-rose-600",
+      image: "https://images.unsplash.com/photo-1434082033009-b81d41d32e1c?auto=format&fit=crop&q=80&w=300&h=300",
+      imageAlt: "Travel planning with maps and documents"
     }
   ];
 
@@ -115,45 +67,122 @@ function Home() {
 
       {/* Main Content */}
       <main className="pt-24 px-4">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4 text-gray-900">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
+        >
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-gray-900">
             Your Way to Relocate
           </h1>
-          <p className="text-lg text-gray-600 mb-6">
+          <p className="text-lg sm:text-xl text-gray-600 mb-6 max-w-3xl mx-auto">
             Streamline your relocation journey to make your move successful
           </p>
           {!showForm && (
-            <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
               <Button 
                 size="lg" 
-                className="rounded-full px-8"
+                className="rounded-full px-12 py-6 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
                 onClick={() => setShowForm(true)}
               >
-                Get Started <ChevronRight className="ml-2 h-4 w-4" />
+                Get Started <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
-              <div className="mt-3 text-sm text-gray-500 space-x-2">
-                <span>No credit card needed</span>
-                <span>•</span>
-                <span>Free consultation available</span>
+              <div className="mt-6 flex items-center justify-center space-x-6 text-base">
+                <div className="flex items-center text-gray-700 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm">
+                  <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>No credit card needed</span>
+                </div>
+                <div className="flex items-center text-gray-700 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm">
+                  <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Free consultation available</span>
+                </div>
               </div>
-            </>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
 
         {showForm ? (
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
             <RelocationForm />
-          </div>
+          </motion.div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {previewCards.map((card, index) => (
-              <Card key={index} className="border-0 shadow-lg">
-                <CardContent className={`p-6 bg-gradient-to-br ${card.gradient} text-white h-full`}>
-                  <h3 className="text-xl font-semibold mb-4">{card.title}</h3>
-                  {card.content}
-                </CardContent>
-              </Card>
-            ))}
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+              {cards.map((card, index) => (
+                <motion.div
+                  key={card.title}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    duration: 0.5,
+                    delay: index * 0.1,
+                    type: "spring",
+                    stiffness: 100
+                  }}
+                  whileHover={{ 
+                    y: -10,
+                    transition: { duration: 0.2 }
+                  }}
+                  className="relative"
+                >
+                  <Card className="group relative h-[320px] overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-2xl">
+                    <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} transition-all duration-300 group-hover:opacity-0`} />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${card.hoverGradient} opacity-0 transition-all duration-300 group-hover:opacity-100`} />
+                    
+                    <CardContent className="relative h-full p-6 flex flex-col justify-between">
+                      <div>
+                        <div className="w-24 h-24 mb-4 rounded-xl overflow-hidden">
+                          <img 
+                            src={card.image} 
+                            alt={card.imageAlt}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 group-hover:text-white transition-colors duration-300 mb-3">
+                          {card.title}
+                        </h3>
+                        <p className="text-gray-600 group-hover:text-white/90 transition-colors duration-300">
+                          {card.description}
+                        </p>
+                      </div>
+                      
+                      <motion.div 
+                        className="flex items-center text-gray-900 group-hover:text-white font-medium"
+                        whileHover={{ x: 5 }}
+                      >
+                        Learn more
+                        <svg 
+                          className="w-5 h-5 ml-2" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round" 
+                            strokeWidth={2} 
+                            d="M9 5l7 7-7 7" 
+                          />
+                        </svg>
+                      </motion.div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
           </div>
         )}
       </main>
