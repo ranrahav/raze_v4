@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { createBrowserClient } from '@/lib/supabase-browser';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { GripVertical, Plus, X } from 'lucide-react';
 
@@ -17,7 +17,8 @@ interface Country {
   name: string;
 }
 
-function CountrySteps() {
+export default function CountrySteps() {
+  const supabase = createBrowserClient();
   const [countries, setCountries] = useState<Country[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [steps, setSteps] = useState<Step[]>([]);
@@ -281,5 +282,3 @@ function CountrySteps() {
     </div>
   );
 }
-
-export default CountrySteps;

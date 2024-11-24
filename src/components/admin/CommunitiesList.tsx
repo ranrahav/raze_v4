@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Pencil, Trash2, Globe } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { createBrowserClient } from '@/lib/supabase-browser';
 
 interface Community {
   id: string;
@@ -12,7 +12,8 @@ interface Community {
   country_code: string;
 }
 
-function CommunitiesList() {
+export default function CommunitiesList() {
+  const supabase = createBrowserClient();
   const [communities, setCommunities] = useState<Community[]>([]);
   const [countries, setCountries] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(true);
@@ -166,5 +167,3 @@ function CommunitiesList() {
     </div>
   );
 }
-
-export default CommunitiesList;

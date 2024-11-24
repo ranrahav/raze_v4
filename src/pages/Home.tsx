@@ -3,6 +3,7 @@ import { Rocket, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import RelocationForm from '../components/RelocationForm';
+import AuthButton from '../components/AuthButton';
 import { motion } from 'framer-motion';
 
 function Home() {
@@ -61,6 +62,7 @@ function Home() {
             <Button className="text-sm sm:text-base bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-full hover:bg-blue-700 whitespace-nowrap">
               Become Service Provider
             </Button>
+            <AuthButton />
           </div>
         </div>
       </nav>

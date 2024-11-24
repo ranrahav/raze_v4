@@ -1,30 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Check, X } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-
-interface Profession {
-  id: string;
-  name: string;
-}
+import { Profession } from '@/types/form';
 
 interface ProfessionSelectProps {
   label: string;
   placeholder: string;
-  selected: Profession | null;
-  onChange: (profession: Profession | null) => void;
+  selected: Profession[];
+  onChange: (professions: Profession[]) => void;
 }
 
 const commonProfessions: Profession[] = [
-  { id: '1', name: 'Software Engineer' },
-  { id: '2', name: 'Doctor' },
-  { id: '3', name: 'Teacher' },
-  { id: '4', name: 'Business Analyst' },
-  { id: '5', name: 'Designer' },
-  { id: '6', name: 'Marketing Manager' },
-  { id: '7', name: 'Accountant' },
-  { id: '8', name: 'Lawyer' },
-  { id: '9', name: 'Chef' },
-  { id: '10', name: 'Architect' },
+  { id: 'software-engineer', name: 'Software Engineer' },
+  { id: 'doctor', name: 'Doctor' },
+  { id: 'teacher', name: 'Teacher' },
+  { id: 'business-analyst', name: 'Business Analyst' },
+  { id: 'designer', name: 'Designer' },
+  { id: 'marketing-manager', name: 'Marketing Manager' },
+  { id: 'accountant', name: 'Accountant' },
+  { id: 'lawyer', name: 'Lawyer' },
+  { id: 'chef', name: 'Chef' },
+  { id: 'architect', name: 'Architect' },
   { id: 'other', name: 'Other' }
 ];
 
@@ -38,134 +34,129 @@ const ProfessionSelect: React.FC<ProfessionSelectProps> = ({
   const [search, setSearch] = useState('');
   const [isOtherSelected, setIsOtherSelected] = useState(false);
   const [customProfession, setCustomProfession] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+        setSearch('');
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearch(value);
-    if (!isOpen && !isOtherSelected) setIsOpen(true);
+    if (!isOpen) setIsOpen(true);
   };
 
   const handleCustomProfessionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setCustomProfession(value);
-    onChange({ id: 'custom', name: value });
-  };
-
-  const filteredProfessions = commonProfessions.filter(
-    profession =>
-      profession.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const handleSelect = (profession: Profession) => {
-    if (profession.id === 'other') {
-      setIsOtherSelected(true);
-      setSearch('');
-      setIsOpen(false);
-      onChange(null);
+    const newProfessions = selected.filter(p => p.id !== 'custom');
+    if (value) {
+      onChange([...newProfessions, { id: 'custom', name: value }]);
     } else {
-      onChange(profession);
-      setIsOtherSelected(false);
-      setSearch('');
-      setCustomProfession('');
-      setIsOpen(false);
+      onChange(newProfessions);
     }
   };
 
-  const removeProfession = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onChange(null);
-    setIsOtherSelected(false);
-    setCustomProfession('');
+  const toggleProfession = (profession: Profession) => {
+    if (profession.id === 'other') {
+      setIsOtherSelected(!isOtherSelected);
+      setCustomProfession('');
+      onChange(selected.filter(p => p.id !== 'custom'));
+      setIsOpen(false);
+      return;
+    }
+
+    const isSelected = selected.some(p => p.id === profession.id);
+    if (isSelected) {
+      onChange(selected.filter(p => p.id !== profession.id));
+    } else {
+      onChange([...selected, profession]);
+    }
     setSearch('');
+    setIsOpen(false);
   };
 
-  return (
-    <div className="space-y-4">
-      <div className="relative">
-        <label className="block text-sm font-medium text-white mb-2">
-          {label}
-        </label>
-        <div className="relative">
-          <div
-            className="w-full min-h-[3.5rem] p-3 bg-white/10 border border-white/20 rounded-xl cursor-text"
-            onClick={() => !isOtherSelected && setIsOpen(true)}
-          >
-            <div className="flex flex-wrap gap-2">
-              {selected && !isOtherSelected ? (
-                <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm flex items-center gap-1">
-                  {selected.name}
-                  <button
-                    onClick={removeProfession}
-                    className="hover:text-white/70 focus:outline-none"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </span>
-              ) : !isOtherSelected ? (
-                <input
-                  type="text"
-                  className="flex-1 bg-transparent outline-none text-white placeholder-white/50 min-w-[200px]"
-                  placeholder={placeholder}
-                  value={search}
-                  onChange={handleInputChange}
-                  onFocus={() => setIsOpen(true)}
-                />
-              ) : null}
-            </div>
-          </div>
+  const filteredProfessions = commonProfessions.filter(profession =>
+    profession.name.toLowerCase().includes(search.toLowerCase())
+  );
 
-          {isOpen && !isOtherSelected && (
-            <>
-              <div 
-                className="fixed inset-0 z-10"
-                onClick={() => {
-                  setIsOpen(false);
-                  setSearch('');
-                }}
-              />
-              <Card className="absolute z-20 w-full mt-2 bg-white border-0 shadow-lg rounded-xl overflow-hidden">
-                <div className="max-h-60 overflow-y-auto">
-                  {filteredProfessions.map(profession => (
-                    <div
-                      key={profession.id}
-                      className="p-3 cursor-pointer flex items-center justify-between hover:bg-gray-50"
-                      onClick={() => handleSelect(profession)}
-                    >
-                      <span className="text-gray-700">{profession.name}</span>
-                      {selected?.id === profession.id && (
-                        <Check className="w-5 h-5 text-blue-600" />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </>
-          )}
+  return (
+    <div className="space-y-2" ref={dropdownRef}>
+      <label className="block text-lg font-medium text-white mb-4">{label}</label>
+      <div className="relative">
+        <div
+          className="w-full min-h-[3.5rem] p-3 bg-gray-700 rounded-xl cursor-text border border-gray-600 hover:border-gray-500 transition-colors"
+          onClick={() => setIsOpen(true)}
+        >
+          <div className="flex flex-wrap gap-2">
+            {selected.map(profession => (
+              <span
+                key={profession.id}
+                className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm flex items-center gap-1"
+              >
+                {profession.name}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleProfession(profession);
+                  }}
+                  className="hover:text-white/70 focus:outline-none"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </span>
+            ))}
+            <input
+              type="text"
+              value={search}
+              onChange={handleInputChange}
+              placeholder={selected.length === 0 ? placeholder : ''}
+              className="flex-1 bg-transparent text-white placeholder-gray-400 min-w-[120px] focus:outline-none"
+            />
+          </div>
         </div>
+
+        {isOpen && (
+          <div className="absolute w-full mt-2 py-2 bg-gray-800 rounded-xl shadow-lg border border-gray-700 z-50 max-h-[300px] overflow-y-auto">
+            {filteredProfessions.length === 0 ? (
+              <div className="px-4 py-2 text-gray-400">No professions found</div>
+            ) : (
+              filteredProfessions.map(profession => (
+                <button
+                  key={profession.id}
+                  onClick={() => toggleProfession(profession)}
+                  className="w-full px-4 py-2 text-left hover:bg-gray-700 text-white flex items-center justify-between group"
+                >
+                  {profession.name}
+                  {selected.some(p => p.id === profession.id) ? (
+                    <Check className="w-4 h-4" />
+                  ) : (
+                    <Check className="w-4 h-4 opacity-0 group-hover:opacity-100" />
+                  )}
+                </button>
+              ))
+            )}
+          </div>
+        )}
       </div>
 
       {isOtherSelected && (
-        <div>
-          <label className="block text-sm font-medium text-white mb-2">
-            Please specify your profession
-          </label>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              className="flex-1 p-3 bg-white/10 border border-white/20 rounded-xl outline-none text-white placeholder-white/50"
-              placeholder="Type your profession..."
-              value={customProfession}
-              onChange={handleCustomProfessionChange}
-              autoFocus
-            />
-            <button
-              onClick={removeProfession}
-              className="p-3 text-white/70 hover:text-white"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
+        <input
+          type="text"
+          className="w-full p-3 bg-gray-700 rounded-xl text-white placeholder-gray-400 border border-gray-600 focus:border-gray-500 focus:outline-none"
+          placeholder="Enter your profession"
+          value={customProfession}
+          onChange={handleCustomProfessionChange}
+        />
       )}
     </div>
   );

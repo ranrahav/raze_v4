@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { createBrowserClient } from '@/lib/supabase-browser';
 
 interface Provider {
   id: string;
@@ -20,7 +20,8 @@ interface Country {
   name: string;
 }
 
-function ProvidersList() {
+export default function ProvidersList() {
+  const supabase = createBrowserClient();
   const [providers, setProviders] = useState<Provider[]>([]);
   const [countries, setCountries] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(true);
@@ -186,5 +187,3 @@ function ProvidersList() {
     </div>
   );
 }
-
-export default ProvidersList;

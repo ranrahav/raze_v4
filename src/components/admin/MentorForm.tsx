@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { createBrowserClient } from '@/lib/supabase-browser';
 
 interface MentorFormData {
   name: string;
@@ -10,7 +10,8 @@ interface MentorFormData {
   relocated_at: string;
 }
 
-function MentorForm() {
+export default function MentorForm() {
+  const supabase = createBrowserClient();
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -205,5 +206,3 @@ function MentorForm() {
     </div>
   );
 }
-
-export default MentorForm;

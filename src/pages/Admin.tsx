@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import { Session } from '@supabase/supabase-js';
 import { LayoutDashboard, Users, Map, Settings, Users2, Globe } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { createBrowserClient } from '@/lib/supabase-browser';
 import Auth from '../components/admin/Auth';
 import ProvidersList from '../components/admin/ProvidersList';
 import ProviderForm from '../components/admin/ProviderForm';
@@ -16,6 +16,7 @@ function Admin() {
   const location = useLocation();
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const supabase = createBrowserClient();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {

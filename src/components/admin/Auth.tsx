@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { createBrowserClient } from '@/lib/supabase-browser';
 
 function Auth() {
+  const supabase = createBrowserClient()
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

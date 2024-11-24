@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { createBrowserClient } from '@/lib/supabase-browser';
 
 interface Mentor {
   id: string;
@@ -12,7 +12,8 @@ interface Mentor {
   relocated_at: string;
 }
 
-function MentorsList() {
+export default function MentorsList() {
+  const supabase = createBrowserClient()
   const [mentors, setMentors] = useState<Mentor[]>([]);
   const [countries, setCountries] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(true);
@@ -159,5 +160,3 @@ function MentorsList() {
     </div>
   );
 }
-
-export default MentorsList;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { createBrowserClient } from '@/lib/supabase-browser';
 
 interface CommunityFormData {
   name: string;
@@ -10,7 +10,8 @@ interface CommunityFormData {
   country_code: string;
 }
 
-function CommunityForm() {
+export default function CommunityForm() {
+  const supabase = createBrowserClient();
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -206,5 +207,3 @@ function CommunityForm() {
     </div>
   );
 }
-
-export default CommunityForm;

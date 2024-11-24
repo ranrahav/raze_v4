@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { Check, X } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-
-interface Country {
-  code: string;
-  name: string;
-}
+import { Country } from '@/types/form';
 
 interface CountrySelectProps {
   label: string;
@@ -16,16 +12,36 @@ interface CountrySelectProps {
 }
 
 const countries: Country[] = [
-  { code: 'US', name: 'United States' },
   { code: 'GB', name: 'United Kingdom' },
+  { code: 'US', name: 'United States' },
+  { code: 'CA', name: 'Canada' },
+  { code: 'AU', name: 'Australia' },
+  { code: 'NZ', name: 'New Zealand' },
   { code: 'DE', name: 'Germany' },
   { code: 'FR', name: 'France' },
   { code: 'ES', name: 'Spain' },
   { code: 'IT', name: 'Italy' },
-  { code: 'CA', name: 'Canada' },
-  { code: 'AU', name: 'Australia' },
+  { code: 'PT', name: 'Portugal' },
+  { code: 'NL', name: 'Netherlands' },
+  { code: 'BE', name: 'Belgium' },
+  { code: 'CH', name: 'Switzerland' },
+  { code: 'AT', name: 'Austria' },
+  { code: 'SE', name: 'Sweden' },
+  { code: 'NO', name: 'Norway' },
+  { code: 'DK', name: 'Denmark' },
+  { code: 'FI', name: 'Finland' },
+  { code: 'IE', name: 'Ireland' },
+  { code: 'IS', name: 'Iceland' },
+  { code: 'SG', name: 'Singapore' },
   { code: 'JP', name: 'Japan' },
-  // Add more countries as needed
+  { code: 'KR', name: 'South Korea' },
+  { code: 'AE', name: 'United Arab Emirates' },
+  { code: 'IL', name: 'Israel' },
+  { code: 'BR', name: 'Brazil' },
+  { code: 'AR', name: 'Argentina' },
+  { code: 'MX', name: 'Mexico' },
+  { code: 'ZA', name: 'South Africa' },
+  { code: 'IN', name: 'India' }
 ];
 
 const CountrySelect: React.FC<CountrySelectProps> = ({
@@ -64,24 +80,24 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
 
   return (
     <div className="relative">
-      <label className="block text-sm font-medium text-white mb-2">
+      <label className="block text-lg font-medium text-white mb-4">
         {label}
         {maxSelections && (
-          <span className="text-white/70 ml-2">
+          <span className="text-gray-300 ml-2">
             (Up to {maxSelections} {maxSelections === 1 ? 'country' : 'countries'})
           </span>
         )}
       </label>
       <div className="relative">
         <div
-          className="w-full min-h-[3.5rem] p-3 bg-white/10 border border-white/20 rounded-xl cursor-text"
+          className="w-full min-h-[3.5rem] p-3 bg-gray-700 rounded-xl cursor-text border border-gray-600 hover:border-gray-500 transition-colors"
           onClick={() => setIsOpen(true)}
         >
           <div className="flex flex-wrap gap-2">
             {selected.map(country => (
               <span
                 key={country.code}
-                className="bg-white/20 text-white px-3 py-1 rounded-full text-sm flex items-center gap-1"
+                className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm flex items-center gap-1"
               >
                 {country.name}
                 <button
@@ -92,49 +108,33 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
                 </button>
               </span>
             ))}
-            {selected.length < maxSelections && (
-              <input
-                type="text"
-                className="flex-1 bg-transparent outline-none text-white placeholder-white/50 min-w-[200px]"
-                placeholder={selected.length === 0 ? placeholder : "Type to search..."}
-                value={search}
-                onChange={handleInputChange}
-                onFocus={() => setIsOpen(true)}
-              />
-            )}
+            <input
+              type="text"
+              value={search}
+              onChange={handleInputChange}
+              placeholder={selected.length === 0 ? placeholder : ''}
+              className="flex-1 bg-transparent text-white placeholder-gray-400 min-w-[120px] focus:outline-none"
+            />
           </div>
         </div>
 
         {isOpen && (
-          <>
-            <div 
-              className="fixed inset-0 z-10"
-              onClick={() => {
-                setIsOpen(false);
-                setSearch('');
-              }}
-            />
-            <Card className="absolute z-20 w-full mt-2 bg-white border-0 shadow-lg rounded-xl overflow-hidden">
-              <div className="max-h-60 overflow-y-auto">
-                {filteredCountries.length === 0 ? (
-                  <div className="p-3 text-gray-500 text-center">No countries found</div>
-                ) : (
-                  filteredCountries.map(country => (
-                    <div
-                      key={country.code}
-                      className="p-3 cursor-pointer flex items-center justify-between hover:bg-gray-50"
-                      onClick={() => handleSelect(country)}
-                    >
-                      <span className="text-gray-700">{country.name}</span>
-                      {selected.some(c => c.code === country.code) && (
-                        <Check className="w-5 h-5 text-blue-600" />
-                      )}
-                    </div>
-                  ))
-                )}
-              </div>
-            </Card>
-          </>
+          <div className="absolute w-full mt-2 py-2 bg-gray-800 rounded-xl shadow-lg border border-gray-700 z-50 max-h-[300px] overflow-y-auto">
+            {filteredCountries.length === 0 ? (
+              <div className="px-4 py-2 text-gray-400">No countries found</div>
+            ) : (
+              filteredCountries.map(country => (
+                <button
+                  key={country.code}
+                  onClick={() => handleSelect(country)}
+                  className="w-full px-4 py-2 text-left hover:bg-gray-700 text-white flex items-center justify-between group"
+                >
+                  {country.name}
+                  <Check className="w-4 h-4 opacity-0 group-hover:opacity-100" />
+                </button>
+              ))
+            )}
+          </div>
         )}
       </div>
     </div>

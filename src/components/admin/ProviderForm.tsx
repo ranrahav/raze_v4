@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { createBrowserClient } from '@/lib/supabase-browser';
 
 interface ProviderFormData {
   name: string;
@@ -12,7 +12,8 @@ interface ProviderFormData {
   countries: string[];
 }
 
-function ProviderForm() {
+export default function ProviderForm() {
+  const supabase = createBrowserClient();
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -239,5 +240,3 @@ function ProviderForm() {
     </div>
   );
 }
-
-export default ProviderForm;
