@@ -1,13 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Rocket, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import RelocationForm from '../components/RelocationForm';
 import AuthButton from '../components/AuthButton';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/hooks/useAuth';
+import { useUserProgress } from '@/hooks/useUserProgress';
 
 function Home() {
   const [showForm, setShowForm] = useState(false);
+  const { user, signIn } = useAuth();
+  const { currentStep, formData } = useUserProgress();
+
+  useEffect(() => {
+    // Listen for return actions after sign-in
+    const handleReturnAction = (event: CustomEvent) => {
+      if (event.detail.type === 'showForm') {
+        setShowForm(true);
+      }
+    };
+
+    window.addEventListener('returnAction', handleReturnAction as EventListener);
+    return () => {
+      window.removeEventListener('returnAction', handleReturnAction as EventListener);
+    };
+  }, []);
+
+  useEffect(() => {
+    // If user is signed in and has progress, show the form
+    if (user && currentStep > 0) {
+      setShowForm(true);
+    }
+  }, [user, currentStep]);
+
+  const handleGetStarted = async () => {
+    if (!user) {
+      // Pass the desired return action when signing in
+      await signIn({ type: 'showForm' });
+      return;
+    }
+    setShowForm(true);
+  };
 
   const cards = [
     {
@@ -90,7 +124,7 @@ function Home() {
               <Button 
                 size="lg" 
                 className="rounded-full px-12 py-6 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
-                onClick={() => setShowForm(true)}
+                onClick={handleGetStarted}
               >
                 Get Started <ChevronRight className="ml-2 h-5 w-5" />
               </Button>

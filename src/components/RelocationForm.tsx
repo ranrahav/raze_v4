@@ -4,14 +4,16 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { ArrowRight, ArrowLeft, PlusCircle, MinusCircle } from 'lucide-react';
 import CountrySelect from '@/components/CountrySelect';
 import ProfessionSelect from '@/components/ProfessionSelect';
-import { GoogleIcon } from '@/components/icons/GoogleIcon';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserProgress } from '@/hooks/useUserProgress';
 import RelocationPlan from '@/components/RelocationPlan';
-import { FormData, defaultFormData, familySizeOptions, budgetOptions, timelineOptions, professionOptions } from '@/types/form';
+import { FormData, defaultFormData, familySizeOptions, kidsAgeGroups } from '@/types/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { GoogleIcon } from '@/components/icons/GoogleIcon';
 
 const steps = [
   {
@@ -27,20 +29,29 @@ const steps = [
     description: 'Share your personal situation',
   },
   {
-    title: 'Budget',
-    description: 'Plan your relocation budget',
-  },
-  {
     title: 'Profession',
     description: 'Tell us about your work',
+  },
+  {
+    title: 'Summary',
+    description: 'Anything else we need to know about your relocation?',
   },
 ];
 
 export default function RelocationForm() {
   const { user, signIn } = useAuth();
   const { currentStep: savedStep, formData: savedFormData, saveProgress } = useUserProgress();
-  const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState<FormData>(defaultFormData);
+  const [currentStep, setCurrentStep] = useState(savedStep || 0);
+  const [formData, setFormData] = useState<FormData>({
+    destinationCountries: savedFormData?.destinationCountries || defaultFormData.destinationCountries,
+    passportCountries: savedFormData?.passportCountries || defaultFormData.passportCountries,
+    familySize: savedFormData?.familySize || defaultFormData.familySize,
+    numberOfKids: savedFormData?.numberOfKids || defaultFormData.numberOfKids,
+    kids: savedFormData?.kids || defaultFormData.kids,
+    professions: savedFormData?.professions || defaultFormData.professions,
+    partnerProfessions: savedFormData?.partnerProfessions || defaultFormData.partnerProfessions,
+    additionalInfo: savedFormData?.additionalInfo || defaultFormData.additionalInfo,
+  });
   const [showPlan, setShowPlan] = useState(false);
 
   // Load saved progress when component mounts
@@ -50,6 +61,14 @@ export default function RelocationForm() {
       setFormData(savedFormData as FormData);
     } else {
       setCurrentStep(1); // Set to first step if no saved data
+    }
+  }, [savedStep, savedFormData]);
+
+  // Update form state when saved progress changes
+  useEffect(() => {
+    if (savedStep !== undefined && savedFormData) {
+      setCurrentStep(savedStep);
+      setFormData(savedFormData);
     }
   }, [savedStep, savedFormData]);
 
@@ -84,8 +103,8 @@ export default function RelocationForm() {
     setShowPlan(true);
   };
 
-  const updateFormData = (field: keyof FormData, value: any) => {
-    const newFormData = { ...formData, [field]: value };
+  const updateFormData = (updates: Partial<FormData>) => {
+    const newFormData = { ...formData, ...updates };
     setFormData(newFormData);
     
     if (user) {
@@ -184,134 +203,176 @@ export default function RelocationForm() {
                 <div className="space-y-8">
                   {/* Step 1: Destination */}
                   {currentStep === 1 && (
-                    <div className="space-y-6">
-                      <CountrySelect
-                        label="Where do you want to relocate?"
-                        placeholder="Select up to 3 countries"
-                        maxSelections={3}
-                        selected={formData.destinationCountries}
-                        onChange={(countries) => updateFormData('destinationCountries', countries)}
-                      />
-                    </div>
+                    <Card>
+                      <CardContent className="pt-6">
+                        <CountrySelect
+                          label="Which countries would you like to relocate to?"
+                          placeholder="Select countries"
+                          selected={formData.destinationCountries}
+                          onChange={(countries) => updateFormData({ destinationCountries: countries })}
+                          className="bg-gray-100 text-gray-900 border-gray-200"
+                        />
+                      </CardContent>
+                    </Card>
                   )}
 
                   {/* Step 2: Passport */}
                   {currentStep === 2 && (
-                    <div className="space-y-6">
-                      <CountrySelect
-                        label="Select your passport countries"
-                        placeholder="Select your passports"
-                        maxSelections={3}
-                        selected={formData.passportCountries}
-                        onChange={(countries) => updateFormData('passportCountries', countries)}
-                      />
-                    </div>
+                    <Card>
+                      <CardContent className="pt-6">
+                        <CountrySelect
+                          label="What passports do you hold?"
+                          placeholder="Select countries"
+                          selected={formData.passportCountries}
+                          onChange={(countries) => updateFormData({ passportCountries: countries })}
+                          className="bg-gray-100 text-gray-900 border-gray-200"
+                        />
+                      </CardContent>
+                    </Card>
                   )}
 
                   {/* Step 3: Personal */}
                   {currentStep === 3 && (
-                    <div className="space-y-8">
-                      <div>
-                        <label className="block text-lg font-medium mb-4 text-white">
-                          What is your marital status?
-                        </label>
-                        <div className="grid grid-cols-2 gap-4">
-                          {['Single', 'Married'].map((status) => (
-                            <button
-                              key={status}
-                              onClick={() => updateFormData('status', status)}
-                              className={`p-6 rounded-xl text-lg font-medium transition-all duration-200 ${
-                                formData.status === status
-                                  ? 'bg-blue-500 text-white shadow-lg'
-                                  : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
-                              }`}
-                            >
-                              {status}
-                            </button>
-                          ))}
+                    <Card>
+                      <CardContent className="pt-6 space-y-6">
+                        <div>
+                          <Label className="text-lg mb-4 block">What's your family size?</Label>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {familySizeOptions.map((option) => (
+                              <button
+                                key={option.value}
+                                onClick={() => updateFormData({
+                                  familySize: option.value,
+                                  ...(option.value !== '3+' && {
+                                    numberOfKids: 0,
+                                    kids: []
+                                  })
+                                })}
+                                className={`p-4 rounded-xl text-left transition-all duration-200 ${
+                                  formData.familySize === option.value
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                                }`}
+                              >
+                                <div className="font-medium">{option.label}</div>
+                              </button>
+                            ))}
+                          </div>
                         </div>
-                      </div>
 
-                      <div>
-                        <label className="block text-lg font-medium mb-4 text-white">
-                          What is your family size?
-                        </label>
-                        <div className="grid grid-cols-3 gap-4">
-                          {familySizeOptions.map((size) => (
-                            <button
-                              key={size.value}
-                              onClick={() => updateFormData('familySize', size.value)}
-                              className={`p-6 rounded-xl text-lg font-medium transition-all duration-200 ${
-                                formData.familySize === size.value
-                                  ? 'bg-blue-500 text-white shadow-lg'
-                                  : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
-                              }`}
-                            >
-                              {size.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
+                        {formData.familySize === '3+' && (
+                          <div className="space-y-4">
+                            <Label className="text-lg block">How many kids do you have?</Label>
+                            <div className="flex items-center gap-4">
+                              <button
+                                onClick={() => {
+                                  const newCount = Math.max(0, formData.numberOfKids - 1);
+                                  updateFormData({
+                                    numberOfKids: newCount,
+                                    kids: formData.kids.slice(0, newCount)
+                                  });
+                                }}
+                                className="p-2 rounded-lg bg-gray-100 text-gray-900 hover:bg-gray-200"
+                              >
+                                <MinusCircle className="w-5 h-5" />
+                              </button>
+                              <span className="text-xl font-medium text-gray-900">{formData.numberOfKids}</span>
+                              <button
+                                onClick={() => {
+                                  const newCount = formData.numberOfKids + 1;
+                                  updateFormData({
+                                    numberOfKids: newCount,
+                                    kids: [
+                                      ...formData.kids,
+                                      { age: '0' }
+                                    ]
+                                  });
+                                }}
+                                className="p-2 rounded-lg bg-gray-100 text-gray-900 hover:bg-gray-200"
+                              >
+                                <PlusCircle className="w-5 h-5" />
+                              </button>
+                            </div>
+
+                            {formData.numberOfKids > 0 && (
+                              <div className="space-y-4">
+                                <Label className="text-lg block">What are their ages?</Label>
+                                <div className="grid gap-4">
+                                  {Array.from({ length: formData.numberOfKids }).map((_, index) => (
+                                    <div key={index} className="flex items-center gap-2">
+                                      <span className="text-gray-500">Kid {index + 1}:</span>
+                                      <Select
+                                        value={formData.kids[index]?.age || '0'}
+                                        onValueChange={(value) => {
+                                          const newKids = [...formData.kids];
+                                          newKids[index] = { age: value };
+                                          updateFormData({ kids: newKids });
+                                        }}
+                                      >
+                                        <SelectTrigger className="flex-1 bg-gray-100 text-gray-900 border-gray-200">
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {kidsAgeGroups.map((age) => (
+                                            <SelectItem key={age.value} value={age.value}>
+                                              {age.label}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
                   )}
 
-                  {/* Step 4: Budget & Timeline */}
+                  {/* Step 4: Profession */}
                   {currentStep === 4 && (
-                    <div className="space-y-8">
-                      <div>
-                        <label className="block text-lg font-medium mb-4 text-white">
-                          What is your relocation budget?
-                        </label>
-                        <div className="grid grid-cols-3 gap-4">
-                          {budgetOptions.map((budget) => (
-                            <button
-                              key={budget.value}
-                              onClick={() => updateFormData('budget', budget.value)}
-                              className={`p-6 rounded-xl text-lg font-medium transition-all duration-200 ${
-                                formData.budget === budget.value
-                                  ? 'bg-blue-500 text-white shadow-lg'
-                                  : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
-                              }`}
-                            >
-                              {budget.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+                    <Card>
+                      <CardContent className="pt-6">
+                        <div className="space-y-6">
+                          <ProfessionSelect
+                            label="What is your profession?"
+                            placeholder="Select or type your profession"
+                            selected={formData.professions || []}
+                            onChange={(professions) =>
+                              updateFormData({ professions })
+                            }
+                          />
 
-                      <div>
-                        <label className="block text-lg font-medium mb-4 text-white">
-                          When do you want to relocate?
-                        </label>
-                        <div className="grid grid-cols-3 gap-4">
-                          {timelineOptions.map((timeline) => (
-                            <button
-                              key={timeline.value}
-                              onClick={() => updateFormData('timeline', timeline.value)}
-                              className={`p-6 rounded-xl text-lg font-medium transition-all duration-200 ${
-                                formData.timeline === timeline.value
-                                  ? 'bg-blue-500 text-white shadow-lg'
-                                  : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
-                              }`}
-                            >
-                              {timeline.label}
-                            </button>
-                          ))}
+                          {formData.familySize !== 'just-me' && (
+                            <ProfessionSelect
+                              label="What is your partner's profession?"
+                              placeholder="Select or type your partner's profession"
+                              selected={formData.partnerProfessions || []}
+                              onChange={(professions) =>
+                                updateFormData({ partnerProfessions: professions })
+                              }
+                            />
+                          )}
                         </div>
-                      </div>
-                    </div>
+                      </CardContent>
+                    </Card>
                   )}
 
-                  {/* Step 5: Profession */}
+                  {/* Step 5: Summary */}
                   {currentStep === 5 && (
-                    <div className="space-y-6">
-                      <ProfessionSelect
-                        label="Select your profession"
-                        placeholder="Select your profession"
-                        selected={formData.professions}
-                        onChange={(professions) => updateFormData('professions', professions)}
-                      />
-                    </div>
+                    <Card>
+                      <CardContent className="pt-6">
+                        <Label className="text-lg block mb-4">Anything else we need to know about your relocation?</Label>
+                        <textarea
+                          value={formData.additionalInfo}
+                          onChange={(e) => updateFormData({ additionalInfo: e.target.value })}
+                          placeholder="Tell us about any specific requirements, concerns, or preferences..."
+                          className="w-full h-40 p-4 rounded-xl bg-gray-100 text-gray-900 placeholder-gray-500 border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                        />
+                      </CardContent>
+                    </Card>
                   )}
 
                   {/* Navigation Buttons */}

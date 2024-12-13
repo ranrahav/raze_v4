@@ -8,14 +8,24 @@ export interface Profession {
   name: string;
 }
 
-export interface FormData {
-  destinationCountries: Country[];
-  passportCountries: Country[];
-  status: string;
-  familySize: string;
-  budget: string;
-  timeline: string;
-  professions: Profession[];
+export interface Child {
+  id: string;
+  age: number;
+}
+
+export type FormData = {
+  destinationCountries?: Country[];
+  passportCountries?: Country[];
+  status?: string;
+  familySize?: string;
+  numberOfKids?: number;
+  kids?: Child[];
+  budget?: string;
+  timeline?: string;
+  professions?: Profession[];
+  partnerProfessions?: Profession[];
+  targetCountries?: string[];
+  additionalInfo?: string;
 }
 
 export const defaultFormData: FormData = {
@@ -23,9 +33,13 @@ export const defaultFormData: FormData = {
   passportCountries: [],
   status: '',
   familySize: '',
+  numberOfKids: 0,
+  kids: [],
   budget: '',
   timeline: '',
-  professions: []
+  professions: [],
+  partnerProfessions: [],
+  additionalInfo: ''
 };
 
 export const familySizeOptions = [
@@ -33,6 +47,11 @@ export const familySizeOptions = [
   { value: '2', label: 'Couple' },
   { value: '3+', label: 'Family' }
 ];
+
+export const kidsAgeGroups = Array.from({ length: 18 }, (_, i) => ({
+  value: i.toString(),
+  label: i === 0 ? 'Under 1 year' : `${i} year${i === 1 ? '' : 's'}`
+}));
 
 export const budgetOptions = [
   { value: 'low', label: '< $10k' },
@@ -45,3 +64,12 @@ export const timelineOptions = [
   { value: 'soon', label: '3-6 months' },
   { value: 'later', label: '6+ months' }
 ];
+
+export type UserLocation = 'home' | 'form' | 'plan';
+
+export type UserProgress = {
+  current_step: number;
+  form_data: FormData | null;
+  location: UserLocation;
+  path: string;
+}

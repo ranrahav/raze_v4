@@ -17,6 +17,26 @@ export function useAuth() {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
+      
+      // Check for return URL after successful sign in
+      if (session?.user) {
+        const params = new URLSearchParams(window.location.search)
+        const returnTo = params.get('returnTo')
+        if (returnTo) {
+          // Clean up the URL
+          const newUrl = window.location.pathname
+          window.history.replaceState({}, '', newUrl)
+          // Parse and execute the return action
+          try {
+            const action = JSON.parse(decodeURIComponent(returnTo))
+            if (action.type === 'showForm') {
+              window.dispatchEvent(new CustomEvent('returnAction', { detail: action }))
+            }
+          } catch (e) {
+            console.error('Error parsing return action:', e)
+          }
+        }
+      }
     })
 
     return () => {
@@ -24,12 +44,20 @@ export function useAuth() {
     }
   }, [])
 
-  const signIn = async () => {
+  const signIn = async (returnAction?: { type: string, [key: string]: any }) => {
     try {
+      let redirectTo = `${window.location.origin}/auth/callback`
+      
+      // If we have a return action, add it to the redirect URL
+      if (returnAction) {
+        const returnParam = encodeURIComponent(JSON.stringify(returnAction))
+        redirectTo += `?returnTo=${returnParam}`
+      }
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -55,7 +83,6 @@ export function useAuth() {
         console.error('Sign out error:', error)
         return false
       }
-      window.location.reload()
       return true
     } catch (error) {
       console.error('Error during sign out:', error)
@@ -67,7 +94,6 @@ export function useAuth() {
     user,
     loading,
     signIn,
-    signOut,
-    isAuthenticated: !!user
+    signOut
   }
 }

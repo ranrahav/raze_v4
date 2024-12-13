@@ -14,7 +14,11 @@ const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: true
+    detectSessionInUrl: true,
+    flowType: 'implicit',
+    debug: true,
+    storageKey: 'raze-auth',
+    storage: window.localStorage
   }
 })
 
