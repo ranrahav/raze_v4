@@ -26,12 +26,7 @@
       "@/*": [
         "./src/*"
       ]
-    },
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+    }
   },
   "include": [
     "src"
@@ -40,8 +35,5 @@
     {
       "path": "./tsconfig.node.json"
     }
-  ],
-  "exclude": [
-    "node_modules"
   ]
 }

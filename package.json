@@ -5,12 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "db:setup": "node scripts/setupDatabase.js",
-    "snapshot:create": "node scripts/createSnapshot.js",
-    "snapshot:restore": "node scripts/restoreSnapshot.js"
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^16.5.0",
@@ -18,7 +15,6 @@
     "@radix-ui/react-select": "^2.1.3",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-switch": "^1.1.2",
-    "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/supabase-js": "^2.46.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -26,7 +22,6 @@
     "embla-carousel-react": "^8.0.0-rc22",
     "framer-motion": "^11.11.17",
     "lucide-react": "^0.344.0",
-    "next": "^13.5.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.22.3",
